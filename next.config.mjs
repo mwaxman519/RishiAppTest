@@ -2,9 +2,7 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: false,
-  experimental: {
-    // appDir is now default in Next.js 15, removing deprecated option
-  },
+  distDir: 'out',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -14,7 +12,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Optimize for Azure deployment
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
@@ -25,12 +22,11 @@ const nextConfig = {
         aggregateTimeout: 300,
       };
     }
-    // Optimize for Azure build limits
     config.optimization = {
       ...config.optimization,
       splitChunks: {
         chunks: 'all',
-        maxSize: 244000, // 244KB for Azure Functions
+        maxSize: 244000,
       },
     };
     return config;
