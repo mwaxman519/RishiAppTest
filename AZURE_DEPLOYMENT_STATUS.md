@@ -1,41 +1,24 @@
-# Azure Static Web Apps Deployment Status - Rishi Platform
+# Azure Deployment Status - June 27, 2025
 
-## Current Configuration
-- Repository: `mwaxman519/rishiplatform`
-- Branch: `main`
-- Framework Detection: Bypassed with CommonJS config
-- Build Command: `next build` (static export)
-- Output: `/out` directory
+## Current Status
+- **Azure App**: https://salmon-wave-08ea45710.2.azurestaticapps.net
+- **Repository**: https://github.com/mwaxman519/RishiAppTest
+- **Token**: Hardcoded and authenticated successfully
+- **Build Status**: Failing during deployment process
+- **Site Status**: Shows Azure default placeholder
 
-## Deployment Settings
-```yaml
-app_location: "/"
-api_location: "api"
-output_location: "out"
-skip_app_build: false
-```
+## Work Completed
+✅ Cleaned up conflicting workflows (removed 3 old workflows)
+✅ Fixed GitHub Actions token syntax errors
+✅ Updated workflow with hardcoded Azure token for testing
+✅ Confirmed token authentication is working (no invalid token errors)
+✅ Updated Azure Static Web Apps configuration for Next.js compatibility
 
-## Database Integration Ready
-- **Connection String**: `postgresql://rishiAppProdDB_owner:npg_h5vrTomMiI9Q@ep-dark-wildflower-a85rz3um-pooler.eastus2.azure.neon.tech/rishiAppProdDB?sslmode=require`
-- **Environment Variable**: `DATABASE_URL` (needs to be set in Azure Portal)
+## Root Issue Identified
+The Azure deployment authenticates successfully but fails during the build process. The site shows Azure's default placeholder page instead of the Rishi Platform, indicating the build/deployment pipeline needs further investigation.
 
-## Azure Functions Deployed
-- `/api/health` - Platform health with database connectivity test
-- `/api/auth/session` - User authentication with database validation
-- `/api/auth/permissions` - Role-based access control
-- `/api/organizations/user` - Organization data from Neon PostgreSQL
-- `/api/bookings` - Cannabis booking management with database integration
+## Configuration Files Updated
+- `.github/workflows/azure-static-web-apps-salmon-wave-08ea45710.yml`
+- `staticwebapp.config.json`
 
-## Next Steps After Successful Deployment
-1. Set `DATABASE_URL` environment variable in Azure Portal
-2. Verify `/api/health` endpoint shows database connectivity
-3. Test frontend API integration with live Azure Functions
-4. Confirm Rishi Platform functionality across all cannabis operational workflows
-
-## Architecture Verified
-- Static Next.js frontend with client-side React hooks
-- Separate Azure Functions backend with Neon PostgreSQL
-- Cannabis industry data model with multi-state operations
-- Role-based access control for Field Managers, Brand Agents, Client Users
-
-The deployment should now proceed without framework detection errors.
+The deployment is correctly targeting https://salmon-wave-08ea45710.2.azurestaticapps.net with proper token authentication.
