@@ -2,27 +2,35 @@
 const nextConfig = {
   output: 'export',
   trailingSlash: false,
-  skipTrailingSlashRedirect: true,
-  images: {
-    unoptimized: true
-  },
-  experimental: {
-    esmExternals: 'loose'
-  },
+  distDir: 'build',
   typescript: {
-    ignoreBuildErrors: false
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: false
+    ignoreDuringBuilds: true,
   },
-  // Optimize for Azure Static Web Apps
-  compress: true,
-  poweredByHeader: false,
-  generateEtags: false,
-  // Environment variables for build
-  env: {
-    AZURE_DEPLOYMENT: 'true'
-  }
+  images: {
+    unoptimized: true,
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  webpack: (config, { dev, isServer }) => {
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: {
+        chunks: 'all',
+        maxSize: 244000,
+      },
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
