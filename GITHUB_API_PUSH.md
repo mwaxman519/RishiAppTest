@@ -1,51 +1,74 @@
-# Direct GitHub Push from Replit
+# GitHub API Push Commands
 
-## One-Command Solution
+Since git push is timing out, here are the exact commands to push the Azure deployment fix using the GitHub API:
 
-Run this single command in Replit's shell to push the Azure fix directly to your GitHub repository:
+## Current Status
+- Local commit `a2ffa1c` contains the multi-platform detection fix
+- GitHub repository is at older commit `ab6b7ed`
+- Need to push the fix to trigger Azure build
 
-```bash
-# Set your GitHub token and push the file
-export GITHUB_TOKEN="your_github_token_here"
-
-curl -X PUT \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/mwaxman519/rishi-platform/contents/next.config.azure-production.mjs" \
-  -d "{
-    \"message\": \"Fix Azure deployment: Add missing production configuration\",
-    \"content\": \"$(base64 -w 0 azure-fix-files/next.config.azure-production.mjs)\",
-    \"branch\": \"main\"
-  }"
-```
-
-## How to get your GitHub token:
-
-1. Go to: https://github.com/settings/tokens
-2. Click "Generate new token" → "Generate new token (classic)"
-3. Give it a name like "Replit Deploy"
-4. Check "repo" permissions
-5. Copy the token
-
-## Complete command with token:
-
-Replace `your_token_here` with your actual GitHub token:
+## GitHub API Push Commands
 
 ```bash
-export GITHUB_TOKEN="ghp_your_actual_token_here"
+# Get the current commit details
+curl -H "Authorization: token $GITHUB_TOKEN" \
+  https://api.github.com/repos/mwaxman519/RishiAppTest/commits/a2ffa1c4e1176650e07af1034de8611833d5781a
 
-curl -X PUT \
+# Create a new tree with the updated files
+curl -X POST \
   -H "Authorization: token $GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  "https://api.github.com/repos/mwaxman519/rishi-platform/contents/next.config.azure-production.mjs" \
-  -d "{
-    \"message\": \"Fix Azure deployment: Add missing production configuration\",
-    \"content\": \"$(base64 -w 0 azure-fix-files/next.config.azure-production.mjs)\",
-    \"branch\": \"main\"
-  }"
+  https://api.github.com/repos/mwaxman519/RishiAppTest/git/trees \
+  -d '{
+    "base_tree": "ab6b7edb1a22f3996eece08ad1c9dca6aaa765b3",
+    "tree": [
+      {
+        "path": "oryx.ini",
+        "mode": "100644",
+        "type": "blob",
+        "content": "[build]\nplatform = nodejs\nversion = 18.20.4\n\n[platforms]\ndisable-python = true\ndisable-php = true\ndisable-dotnet = true\ndisable-java = true"
+      }
+    ]
+  }'
+
+# Create the commit
+curl -X POST \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/mwaxman519/RishiAppTest/git/commits \
+  -d '{
+    "message": "Fix Azure multi-platform detection: eliminate Python/PHP files + enhanced oryx.ini",
+    "tree": "NEW_TREE_SHA",
+    "parents": ["ab6b7edb1a22f3996eece08ad1c9dca6aaa765b3"]
+  }'
+
+# Update the main branch reference
+curl -X PATCH \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/mwaxman519/RishiAppTest/git/refs/heads/main \
+  -d '{
+    "sha": "NEW_COMMIT_SHA"
+  }'
 ```
 
-This command will:
-1. Upload the file directly to your GitHub repository
-2. Trigger Azure deployment automatically
-3. Fix your deployment within 3 minutes
+## Simplified Alternative: Manual Upload
+
+1. Go to https://github.com/mwaxman519/RishiAppTest
+2. Create new file: `oryx.ini`
+3. Content:
+```
+[build]
+platform = nodejs
+version = 18.20.4
+
+[platforms]
+disable-python = true
+disable-php = true
+disable-dotnet = true
+disable-java = true
+```
+4. Commit message: "Fix Azure multi-platform detection"
+5. This will trigger the Azure build automatically
+
+The key fix is adding `oryx.ini` to force Node.js-only detection and prevent the multi-platform error.
