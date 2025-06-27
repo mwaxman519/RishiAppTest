@@ -134,15 +134,12 @@ This is the comprehensive Rishi Platform built with Next.js 15.2.2, designed for
 - **Authentication**: JWT-based system with 6-tier RBAC
 - **Mobile UI**: Responsive design with theme switching
 
-### Azure Deployment Architecture (FINAL CORRECT VERSION)
-- **Development Environment**: ✅ Running successfully at localhost:5000
+### Azure Deployment Architecture (CURRENT STATUS)
+- **Development Environment**: ✅ Running successfully at localhost:5000 with 1298+ modules
 - **Production Deployment**: Azure Static Web Apps at https://yellow-rock-0a390fd10.1.azurestaticapps.net
-- **Frontend**: Next.js static export (output: 'export') → Azure CDN
-- **Backend**: 143 Next.js API routes in /app/api/* → Automatically converted to individual Azure Functions
-- **Configuration**: api_location: "" (empty) tells Azure to convert Next.js API routes
-- **Database**: Neon PostgreSQL accessed from converted Azure Functions
-- **Events**: EventBusService integrates with Azure Event Grid from functions
-- **Status**: Single-app deployment with automatic API route conversion (NOT separate functions app)
+- **Current Issue**: Azure deployments experiencing "startup_failure" - requires token/configuration investigation
+- **Local Status**: Rishi Platform fully functional with dashboard, authentication, organization management
+- **Next Steps**: Resolve Azure Static Web Apps deployment token authentication
 
 ### Azure Deployment Success Factors (CRITICAL CONFIGURATION)
 **Bundle Optimization (Essential for Azure):**
