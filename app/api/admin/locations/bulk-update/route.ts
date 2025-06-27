@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
-import prisma from '../../../../../lib/prisma';
+import { db } from '../../../../../lib/db';
+import { locations } from '../../../../../shared/schema';
+import { eq, inArray } from 'drizzle-orm';
 import { authOptions } from '../../../../api/auth/[...nextauth]/route';
 import hasPermission from '../../../../../lib/rbac/hasPermission';
 import { locationEventBus } from '../../../../services/infrastructure/messaging/locationEvents';
@@ -10,10 +12,12 @@ import { locationEventBus } from '../../../../services/infrastructure/messaging/
 const BulkUpdateSchema = z.object({
   locationIds: z.array(z.string()),
   updates: z.object({
-    status: z.string().optional(),
-    locationType: z.string().optional(),
-    notes: z.string().optional(),
-    // Add other fields that can be bulk updated as needed
+    name: z.string().optional(),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    isActive: z.boolean().optional(),
   })
 });
 
@@ -60,31 +64,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Get the current state of locations before updating
-    const locationsBeforeUpdate = await prisma.location.findMany({
-      where: {
-        id: {
-          in: locationIds
-        }
-      },
-      select: {
-        id: true,
-        status: true,
-        locationType: true
-      }
-    });
+    const locationsBeforeUpdate = await db.select({
+      id: locations.id,
+      status: locations.status,
+      locationType: locations.locationType
+    }).from(locations).where(inArray(locations.id, locationIds));
 
     // Perform the updates
-    const updateResult = await prisma.location.updateMany({
-      where: {
-        id: {
-          in: locationIds
-        }
-      },
-      data: {
+    const updateResult = await db.update(locations)
+      .set({
         ...updates,
         updatedAt: new Date()
-      }
-    });
+      })
+      .where(inArray(locations.id, locationIds));
 
     // Get user info for event metadata
     // In development mode, we use a mock user with specific properties
@@ -147,8 +139,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Updated ${updateResult.count} locations`,
-      count: updateResult.count
+      message: `Updated ${locationIds.length} locations`,
+      count: locationIds.length
     });
     
   } catch (error) {
