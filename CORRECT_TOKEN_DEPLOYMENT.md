@@ -19,6 +19,14 @@ The deployment token needs to be added as a GitHub repository secret:
 4. Value: Paste the token above
 5. Click "Add secret"
 
+## Azure Environment Variables Required
+
+After adding the GitHub secret, configure these environment variables in Azure:
+
+1. **DATABASE_URL**: Your Neon PostgreSQL connection string
+2. **NEXTAUTH_SECRET**: `development-secret-key-for-local-development-only`
+3. **NEXTAUTH_URL**: `https://yellow-rock-0a390fd10.1.azurestaticapps.net`
+
 ## What Happens Next
 Once the secret is added, the workflow will automatically trigger on the next push and deploy the Rishi Platform to:
 - **Frontend**: Static files → Azure CDN
