@@ -15,6 +15,7 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+
   webpack: (config, { dev, isServer }) => {
     if (dev) {
       config.watchOptions = {
@@ -22,16 +23,13 @@ const nextConfig = {
         aggregateTimeout: 300,
       };
     }
+    // Simplified optimization for Azure builds
     config.optimization = {
       ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        maxSize: 244000,
-      },
+      minimize: false,
     };
     return config;
   },
-  allowedDevOrigins: ['127.0.0.1', 'localhost', '*.replit.dev'],
 };
 
 export default nextConfig;

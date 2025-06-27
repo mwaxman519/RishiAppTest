@@ -1,56 +1,42 @@
-# Azure Deployment Fix - Build Script Error
+# Azure Deployment Systematic Resolution Plan
 
-## ACTUAL PROBLEM IDENTIFIED
-**Root Cause**: Missing build scripts in package.json causing Oryx build failure
-**Azure Error**: "Could not find either 'build' or 'build:azure' node under 'scripts'"
-**Previous Analysis**: Incorrectly assumed upload timeout issue
+## Current Issue Analysis
+Two consecutive Azure deployment failures despite:
+- Correct Next.js configuration 
+- Valid GitHub secrets
+- Proper environment variables
+- Optimized build configurations
 
-## SOLUTION IMPLEMENTED
-- Added missing 'build:azure' script to package.json
-- Restored proper output_location: 'out' for Next.js static export
-- Fixed workflow configuration for Azure Static Web Apps
+## Root Cause Investigation Required
+The deployment failures suggest a fundamental compatibility issue between:
+1. Next.js 15.3.2 App Router structure
+2. Azure Static Web Apps build environment
+3. Complex application architecture (143 API routes)
 
-## Root Cause Hypothesis (Prioritized)
+## Systematic Resolution Approach
 
-### 1. Azure Static Web Apps Upload Service Issue (Most Likely)
-- Upload polling timeout suggests Azure backend processing failure
-- Consistent 590s timeout across all configurations indicates service limit
-- Build succeeds but upload/deployment pipeline fails
+### Phase 1: Minimal Working Deployment
+Create stripped-down version to establish successful Azure pipeline:
+- Single page Next.js app
+- One API route for testing
+- Verify Azure Functions conversion works
 
-### 2. Azure Account/Region Limitations
-- Subscription resource limits or quotas
-- Regional service availability issues
-- Account billing/permission restrictions
+### Phase 2: Incremental API Addition
+Once baseline works:
+- Add core API routes (5-10 endpoints)
+- Test Azure Functions generation
+- Verify database connectivity
 
-### 3. Repository/Token Issues (Least Likely)
-- AZURE_STATIC_WEB_APPS_API_TOKEN insufficient permissions
-- GitHub repository size/history causing conflicts
+### Phase 3: Full Application Deployment
+- Deploy complete Rishi Platform
+- All 143 API routes
+- Full functionality testing
 
-## Systematic Testing Plan (3 Tests Max)
+## Implementation Plan
+1. Create minimal test application
+2. Deploy to verify Azure pipeline works
+3. Incrementally add complexity
+4. Identify exact failure point
+5. Implement targeted fixes
 
-### Test 1: Service Health Verification (5 minutes)
-**Goal**: Verify if Azure Static Web Apps service is functional
-**Action**: Check Azure Portal service health and try manual deployment
-**Expected**: Identifies if this is a service-wide issue
-
-### Test 2: Fresh Environment Test (10 minutes)
-**Goal**: Eliminate account/token/repository variables
-**Action**: Create new Azure Static Web App resource with different region
-**Expected**: Isolates account vs service issues
-
-### Test 3: Alternative Deployment Path (10 minutes)
-**Goal**: Bypass GitHub Actions if service is functional
-**Action**: Direct Azure Portal deployment from GitHub repository
-**Expected**: Confirms if issue is in GitHub Actions integration vs core service
-
-## Decision Matrix
-- **All Tests Fail**: Azure service issue - escalate to Azure Support
-- **Manual Works**: GitHub Actions integration issue - fix workflow
-- **Different Region Works**: Regional service limitation - change region
-- **New Resource Works**: Original resource corrupted - use new resource
-
-## Success Criteria
-Single successful deployment with accessible Rishi Platform at Azure URL
-
-## Time Limit
-30 minutes maximum - if unresolved, recommend alternative deployment strategy
+This systematic approach will isolate the root cause and ensure successful deployment of the complete Rishi Platform.
