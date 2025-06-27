@@ -23,17 +23,35 @@ const nextConfig = {
         aggregateTimeout: 300,
       };
     }
-    // Simplified Azure build optimization
-    if (!dev) {
+    
+    // Azure Static Web Apps optimized build
+    if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
         splitChunks: {
           chunks: 'all',
-          maxSize: 200000,
+          maxSize: 244000, // Azure limit
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 5,
+            },
+          },
         },
         minimize: true,
+        usedExports: true,
+        sideEffects: false,
       };
     }
+    
     return config;
   },
 };
