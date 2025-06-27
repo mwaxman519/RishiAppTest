@@ -23,10 +23,12 @@ const nextConfig = {
         aggregateTimeout: 300,
       };
     }
-    // Simplified optimization for Azure builds
     config.optimization = {
       ...config.optimization,
-      minimize: false,
+      splitChunks: {
+        chunks: 'all',
+        maxSize: 244000,
+      },
     };
     return config;
   },
