@@ -96,3 +96,15 @@ full-build.log
 staticwebapp.*.config.json
 next.config.*.mjs
 package.*.json
+
+# Prevent Azure platform detection
+*.py
+*.pyc
+__pycache__/
+*.php
+composer.json
+composer.lock
+requirements.txt
+*.egg-info/
+.uv/
+.cache/uv/

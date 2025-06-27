@@ -25,6 +25,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.20.4'
+      - name: Clean cache and prevent platform detection
+        run: |
+          find . -name "*.py" -not -path "./node_modules/*" -delete || true
+          find . -name "*.php" -not -path "./node_modules/*" -delete || true
+          find . -name "requirements.txt" -delete || true
+          find . -name "composer.json" -not -path "./node_modules/*" -delete || true
+          rm -rf .cache/uv/ || true
+          rm -rf __pycache__/ || true
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
       - name: Get Id Token
