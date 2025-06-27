@@ -1,10 +1,9 @@
-# Azure Static Web Apps Deployment Trigger
+# Azure Deployment Triggered
 
-This file triggers a GitHub Actions build for Azure Static Web Apps deployment.
+## Deployment Status
+- **Azure App**: https://yellow-rock-0a390fd10.1.azurestaticapps.net
+- **GitHub Secret**: Configured
+- **Azure Environment Variables**: Configured
+- **Deployment**: Triggered
 
-## Architecture
-- Static frontend exported to `/out` directory
-- Azure Functions in `/api` directory
-- Proper separation for Azure Static Web Apps
-
-Timestamp: 2025-06-23T13:55:00Z
+This commit triggers the Azure Static Web Apps deployment. All secrets and environment variables are configured.
