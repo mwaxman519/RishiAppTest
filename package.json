@@ -110,7 +110,7 @@
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.18.1",
     "drizzle-orm": "^0.39.3",
-    "drizzle-zod": "^0.7.0",
+    "drizzle-zod": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
     "esbuild": "^0.25.5",
     "express": "^4.21.2",
