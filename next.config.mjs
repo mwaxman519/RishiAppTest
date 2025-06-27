@@ -23,13 +23,17 @@ const nextConfig = {
         aggregateTimeout: 300,
       };
     }
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        maxSize: 244000,
-      },
-    };
+    // Simplified Azure build optimization
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          maxSize: 200000,
+        },
+        minimize: true,
+      };
+    }
     return config;
   },
 };
