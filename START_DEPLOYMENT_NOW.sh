@@ -1,108 +1,61 @@
 #!/bin/bash
 
-echo "=== Rishi Platform Azure Deployment ==="
-echo "Creating deployment package with:"
-echo "- Static React frontend → Azure CDN"
-echo "- 143 API routes → Azure Functions"
-echo "- EventBus system → Azure Event Grid"
-echo "- Database connections → Neon PostgreSQL"
-echo ""
+# Direct Azure Deployment Trigger Script
+# Resolves git push timeout by creating manual deployment package
+
+echo "🚀 Starting Azure Deployment Process..."
 
 # Create deployment directory
-echo "Creating deployment directory..."
-mkdir -p rishi-deploy
-cd rishi-deploy
+mkdir -p /tmp/azure-final-deploy
+cd /tmp/azure-final-deploy
 
-# Extract deployment files
-echo "Extracting deployment files..."
-tar -xzf ../rishi-platform-azure.tar.gz
+# Copy essential deployment files from working directory
+cp -r /tmp/azure-deploy/RishiAppTest/* . 2>/dev/null || true
 
-# Create .gitignore
-echo "Creating .gitignore..."
-cat > .gitignore << 'EOF'
-node_modules/
-.next/
-out/
-.env.local
-.env
-*.log
-.DS_Store
+# Ensure critical files exist
+if [ ! -f "oryx.ini" ]; then
+    echo "Creating oryx.ini..."
+    cat > oryx.ini << 'EOF'
+[build]
+platform = nodejs
+version = 18.20.4
+
+[platforms]
+disable-python = true
+disable-php = true
+disable-dotnet = true
+disable-java = true
+disable-ruby = true
+disable-go = true
 EOF
+fi
 
-# Create comprehensive README
-echo "Creating README.md..."
-cat > README.md << 'EOF'
-# Rishi Platform - Enterprise Workforce Management
+# Verify deployment token is in workflow
+if ! grep -q "549c1a33c5703c94112228dc191a4d5eb4c1b3e616c9cc7df371b3ad6036eb8601" .github/workflows/azure-static-web-apps-yellow-rock-0a390fd10.yml; then
+    echo "❌ Azure deployment token missing from workflow"
+    exit 1
+fi
 
-## Architecture Overview
-- **Frontend**: Next.js 15.3.2 static export → Azure CDN global distribution  
-- **Backend**: 143 API routes → Azure Functions (auto-scaled serverless)
-- **Events**: EventBus system → Azure Event Grid (enterprise messaging)
-- **Database**: Neon PostgreSQL with connection pooling
-- **Authentication**: JWT-based with NextAuth integration
+# Remove any Python/PHP files
+find . -name "*.py" -delete 2>/dev/null || true
+find . -name "*.php" -delete 2>/dev/null || true
+rm -f pyproject.toml uv.lock requirements.txt composer.json 2>/dev/null || true
 
-## Azure Infrastructure (Auto-Created)
-- Azure Static Web Apps (frontend hosting + function management)
-- Azure Functions (143+ serverless endpoints)
-- Azure Event Grid (event-driven architecture)
-- Azure CDN (global content delivery)
-- GitHub Actions (CI/CD pipeline)
+# Create deployment package
+echo "📦 Creating deployment package..."
+tar -czf ../azure-deployment-final.tar.gz \
+    --exclude='.git' \
+    --exclude='node_modules' \
+    --exclude='.next' \
+    --exclude='out' \
+    --exclude='*.log' \
+    .
 
-## API Endpoints (Auto-Converted to Azure Functions)
-- `/api/health` - System health monitoring
-- `/api/auth/*` - Authentication services
-- `/api/bookings/*` - Cannabis booking management
-- `/api/organizations/*` - Multi-tenant organization management
-- `/api/users/*` - User and role management
-- `/api/locations/*` - Geographic location services
-- ... (143 total endpoints)
-
-## Event-Driven Processing
-EventBus calls automatically converted to Azure Event Grid:
-- booking.created → staff assignment workflows
-- location.updated → mapping service updates  
-- user.assigned → notification triggers
-- inventory.updated → tracking workflows
-
-## Cannabis Industry Features
-- Multi-state compliance tracking
-- Staff scheduling and assignment
-- Location-based service delivery
-- Real-time operational dashboards
-- Role-based access control (6 tier system)
-
-## Deployment
-Deployed via Azure Static Web Apps with automatic GitHub integration.
-All infrastructure created and managed automatically.
-EOF
-
-# Initialize Git
-echo "Initializing Git repository..."
-git init
-git add .
-git commit -m "Rishi Platform deployment: Next.js → Azure Functions + Event Grid conversion"
-git branch -M main
-
+echo "✅ Deployment package ready: /tmp/azure-deployment-final.tar.gz"
 echo ""
-echo "=== DEPLOYMENT PACKAGE READY ==="
+echo "NEXT STEPS:"
+echo "1. Download the package: /tmp/azure-deployment-final.tar.gz"
+echo "2. Extract and push to GitHub repository"
+echo "3. Azure will automatically build and deploy"
 echo ""
-echo "Next steps:"
-echo "1. Create GitHub repository: 'rishi-platform'"
-echo "2. Add your repository URL:"
-echo "   git remote add origin https://github.com/YOUR_USERNAME/rishi-platform.git"
-echo "3. Push to GitHub:"
-echo "   git push -u origin main"
-echo "4. Create Azure Static Web App with these settings:"
-echo "   - Source: GitHub"
-echo "   - Repository: rishi-platform"
-echo "   - Build preset: Next.js"
-echo "   - App location: /"
-echo "   - API location: api"
-echo "   - Output location: out"
-echo ""
-echo "Azure will automatically create:"
-echo "- 143 Azure Functions from your API routes"
-echo "- Event Grid for EventBus processing"
-echo "- Global CDN for frontend distribution"
-echo "- CI/CD pipeline for automatic deployments"
-EOF
+echo "Expected Azure URL: https://yellow-rock-0a390fd10.1.azurestaticapps.net"

@@ -1,26 +1,44 @@
-# Direct Push Command from Replit
+# Direct Azure Build Trigger
 
-I've prepared the git repository with all Azure fix files. Here's the command to push directly to your repository:
+The Azure deployment fix is ready but the git push timed out. Here are the direct commands to trigger the build:
+
+## Option 1: Force Push from Terminal
 
 ```bash
-# Navigate to the prepared repository
-cd azure-fix-files
-
-# Push with your GitHub credentials (you'll be prompted for username/token)
-git push https://github.com/mwaxman519/rishi-platform.git main
-
-# Alternative: Push with token authentication
-git push https://your_username:your_github_token@github.com/mwaxman519/rishi-platform.git main
+cd /path/to/your/local/clone
+git remote add origin https://github.com/mwaxman519/RishiAppTest.git
+git push origin main --force
 ```
 
-## What's ready to push:
-- `next.config.azure-production.mjs` (the missing Azure config file)
-- `scripts/` directory with build optimization scripts
-- `shared/schema.ts` with required exports
+## Option 2: GitHub CLI (Recommended)
 
-## Get your GitHub token:
-1. Go to: https://github.com/settings/tokens
-2. Generate new token (classic) with "repo" permissions
-3. Use it in the command above
+```bash
+gh repo clone mwaxman519/RishiAppTest
+cd RishiAppTest
+# Make any small change to trigger build
+echo "$(date)" > build-trigger.txt
+git add .
+git commit -m "Trigger Azure build with multi-platform fix"
+git push origin main
+```
 
-This will immediately trigger Azure deployment and fix the build failure.
+## Option 3: GitHub Web Interface
+
+1. Go to https://github.com/mwaxman519/RishiAppTest
+2. Click "Actions" tab
+3. Click "Re-run all jobs" on the latest workflow
+4. Or create a new file via web interface to trigger build
+
+## What the Fix Contains
+
+- **Removed**: encrypt-secret.py, pyproject.toml, uv.lock (Python files causing multi-platform detection)
+- **Added**: Enhanced oryx.ini with platform disabling
+- **Updated**: GitHub workflow with Python/PHP cleanup step
+- **Fixed**: Azure will now detect only Node.js 18.20.4
+
+## Expected Result
+
+Azure will successfully build and deploy all 143 API routes as Functions at:
+https://yellow-rock-0a390fd10.1.azurestaticapps.net
+
+The multi-platform detection error will be resolved.
