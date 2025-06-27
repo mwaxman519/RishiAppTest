@@ -4,67 +4,29 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
-    permissions:
-       id-token: write
-       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.20.4'
-      - name: Clean cache and prevent platform detection
-        run: |
-          find . -name "*.py" -not -path "./node_modules/*" -delete || true
-          find . -name "*.php" -not -path "./node_modules/*" -delete || true
-          find . -name "requirements.txt" -delete || true
-          find . -name "composer.json" -not -path "./node_modules/*" -delete || true
-          rm -rf .cache/uv/ || true
-          rm -rf __pycache__/ || true
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
-      - name: Get Id Token
-        uses: actions/github-script@v6
-        id: idtoken
-        with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
+          node-version: "18.20.4"
+          cache: "npm"
+      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: 549c1a33c5703c94112228dc191a4d5eb4c1b3e616c9cc7df371b3ad6036eb8601-dd689cf9-09d6-4493-b894-0bf1a566612001013180a390fd10
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_ROCK_0A390FD10 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
           api_location: ""
           output_location: "out"
-          github_id_token: ${{ steps.idtoken.outputs.result }}
-        env:
-          NODE_VERSION: '18.20.4'
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_ROCK_0A390FD10 }}
-          action: "close"
