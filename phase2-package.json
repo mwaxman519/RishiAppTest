@@ -1,0 +1,28 @@
+{
+  "name": "cannabis-workforce-management",
+  "version": "1.0.0",
+  "description": "Cannabis Workforce Management Platform - Azure Static Web Apps",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "build:azure": "next build && next export",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.2.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mwaman519/rishiapptest.git"
+  },
+  "author": "Cannabis Workforce Management",
+  "license": "MIT"
+}
