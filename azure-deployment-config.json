@@ -1,0 +1,11 @@
+{
+  "azure_app_url": "https://salmon-wave-08ea45710.2.azurestaticapps.net",
+  "github_repo": "https://github.com/mwaxman519/RishiAppTest",
+  "workflow_file": "azure-static-web-apps-salmon-wave-08ea45710.yml",
+  "deployment_token": "385bf88f9fb04f7bb58a2ccb76ac60722a4205a097494bbcaa4d881349c36a2002-52b040d7-f5ad-4b1f-94db-c2164d9bd490010112308ea45710",
+  "build_config": {
+    "app_location": "/",
+    "api_location": "",
+    "output_location": "out"
+  }
+}
